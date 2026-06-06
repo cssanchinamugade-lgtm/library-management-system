@@ -1,0 +1,314 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <limits>
+
+using namespace std;
+
+// Structure for Book
+struct Book
+{
+    int id;
+    string title;
+    string author;
+    bool issued;
+    int issuedTo; // Member ID
+
+    Book()
+    {
+        issued = false;
+        issuedTo = -1;
+    }
+};
+
+// Structure for Member
+struct Member
+{
+    int memberId;
+    string memberName;
+};
+
+vector<Book> books;
+vector<Member> members;
+
+// Add Book
+void addBook()
+{
+    Book b;
+
+    cout << "\nEnter Book ID: ";
+    cin >> b.id;
+
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    cout << "Enter Book Title: ";
+    getline(cin, b.title);
+
+    cout << "Enter Author Name: ";
+    getline(cin, b.author);
+
+    books.push_back(b);
+
+    cout << "Book added successfully.\n";
+}
+
+// Add Member
+void addMember()
+{
+    Member m;
+
+    cout << "\nEnter Member ID: ";
+    cin >> m.memberId;
+
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    cout << "Enter Member Name: ";
+    getline(cin, m.memberName);
+
+    members.push_back(m);
+
+    cout << "Member added successfully.\n";
+}
+
+// Display Books
+void displayBooks()
+{
+    if (books.empty())
+    {
+        cout << "\nNo books available.\n";
+        return;
+    }
+
+    cout << "\n========== BOOK LIST ==========\n";
+
+    for (size_t i = 0; i < books.size(); i++)
+    {
+        cout << "Book ID : " << books[i].id << endl;
+        cout << "Title   : " << books[i].title << endl;
+        cout << "Author  : " << books[i].author << endl;
+
+        if (books[i].issued)
+            cout << "Status  : Issued\n";
+        else
+            cout << "Status  : Available\n";
+
+        cout << "------------------------------\n";
+    }
+}
+
+// Search by Title
+void searchByTitle()
+{
+    string title;
+    bool found = false;
+
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    cout << "\nEnter Book Title: ";
+    getline(cin, title);
+
+    for (size_t i = 0; i < books.size(); i++)
+    {
+        if (books[i].title == title)
+        {
+            cout << "\nBook Found\n";
+            cout << "ID     : " << books[i].id << endl;
+            cout << "Author : " << books[i].author << endl;
+            cout << "Status : "
+                 << (books[i].issued ? "Issued" : "Available")
+                 << endl;
+
+            found = true;
+        }
+    }
+
+    if (!found)
+        cout << "Book not found.\n";
+}
+
+// Search by Author
+void searchByAuthor()
+{
+    string author;
+    bool found = false;
+
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    cout << "\nEnter Author Name: ";
+    getline(cin, author);
+
+    for (size_t i = 0; i < books.size(); i++)
+    {
+        if (books[i].author == author)
+        {
+            cout << "\nBook Found\n";
+            cout << "ID    : " << books[i].id << endl;
+            cout << "Title : " << books[i].title << endl;
+            cout << "Status: "
+                 << (books[i].issued ? "Issued" : "Available")
+                 << endl;
+
+            found = true;
+        }
+    }
+
+    if (!found)
+        cout << "No books found for this author.\n";
+}
+
+// Issue Book
+void issueBook()
+{
+    int bookId, memberId;
+    bool bookFound = false;
+    bool memberFound = false;
+
+    cout << "\nEnter Book ID: ";
+    cin >> bookId;
+
+    cout << "Enter Member ID: ";
+    cin >> memberId;
+
+    for (size_t i = 0; i < members.size(); i++)
+    {
+        if (members[i].memberId == memberId)
+        {
+            memberFound = true;
+            break;
+        }
+    }
+
+    if (!memberFound)
+    {
+        cout << "Member not found.\n";
+        return;
+    }
+
+    for (size_t i = 0; i < books.size(); i++)
+    {
+        if (books[i].id == bookId)
+        {
+            bookFound = true;
+
+            if (books[i].issued)
+            {
+                cout << "Book is already issued.\n";
+            }
+            else
+            {
+                books[i].issued = true;
+                books[i].issuedTo = memberId;
+                cout << "Book issued successfully.\n";
+            }
+
+            break;
+        }
+    }
+
+    if (!bookFound)
+        cout << "Book not found.\n";
+}
+
+// Return Book
+void returnBook()
+{
+    int bookId;
+    bool found = false;
+
+    cout << "\nEnter Book ID: ";
+    cin >> bookId;
+
+    for (size_t i = 0; i < books.size(); i++)
+    {
+        if (books[i].id == bookId)
+        {
+            found = true;
+
+            if (!books[i].issued)
+            {
+                cout << "Book is already available.\n";
+            }
+            else
+            {
+                books[i].issued = false;
+                books[i].issuedTo = -1;
+                cout << "Book returned successfully.\n";
+            }
+
+            break;
+        }
+    }
+
+    if (!found)
+        cout << "Book not found.\n";
+}
+
+int main()
+{
+    int choice;
+
+    do
+    {
+        cout << "\n========== LIBRARY MANAGEMENT SYSTEM ==========\n";
+        cout << "1. Add Book\n";
+        cout << "2. Add Member\n";
+        cout << "3. Display Books\n";
+        cout << "4. Search Book by Title\n";
+        cout << "5. Search Book by Author\n";
+        cout << "6. Issue Book\n";
+        cout << "7. Return Book\n";
+        cout << "8. Exit\n";
+
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        while (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Invalid input. Enter again: ";
+            cin >> choice;
+        }
+
+        switch (choice)
+        {
+        case 1:
+            addBook();
+            break;
+
+        case 2:
+            addMember();
+            break;
+
+        case 3:
+            displayBooks();
+            break;
+
+        case 4:
+            searchByTitle();
+            break;
+
+        case 5:
+            searchByAuthor();
+            break;
+
+        case 6:
+            issueBook();
+            break;
+
+        case 7:
+            returnBook();
+            break;
+
+        case 8:
+            cout << "Exiting program...\n";
+            break;
+
+        default:
+            cout << "Invalid choice.\n";
+        }
+
+    } while (choice != 8);
+
+    return 0;
+}
